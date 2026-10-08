@@ -41,6 +41,8 @@
 #include <array>
 #include <algorithm>
 #include <chrono>
+#include <cstdlib>
+#include <cstring>
 
 namespace Slic3r {
 namespace GUI {
@@ -93,41 +95,16 @@ static EMoveType buffer_type(unsigned char id) {
     return static_cast<EMoveType>(static_cast<unsigned char>(EMoveType::Retract) + id);
 }
 
-// GPU path pipeline (de-geometrized rendering) master switch: enabled
-// automatically whenever the OpenGL context is 3.1 or newer (the pipeline
-// needs texture buffers, GLSL 140 shaders and instanced draws); older
-// contexts keep the legacy CPU-generated vertex buffers.
+// GPU path pipeline (de-geometrized rendering) master switch. Keep the
+// pre-2.4.1 default: the pipeline is opt-in through ORCA_GPU_TOOLPATH, with
+// unset, empty and "0" all selecting the legacy CPU-generated vertex buffers.
 static bool gpu_path_pipeline_enabled()
 {
-    // Enabled on GL 3.1+ provided the gpu_path program actually loaded (a
-    // compile failure at startup silently falls back to the legacy buffers
-    // instead of rendering nothing for the whole session). The shader lookup
-    // comes first and short-circuits the version query, so an early call
-    // before GL initialization degrades to the legacy pipeline instead of
-    // latching a poisoned "N/A" version into the process-wide GLInfo cache.
-    // Evaluated once per process; the shader manager is populated during
-    // init_opengl, well before preview load.
-    static const bool enabled = GUI::wxGetApp().get_shader("gpu_path") != nullptr
+    const char* value = std::getenv("ORCA_GPU_TOOLPATH");
+    static const bool enabled = value != nullptr && value[0] != '\0' && std::strcmp(value, "0") != 0
+        && GUI::wxGetApp().get_shader("gpu_path") != nullptr
         && GUI::wxGetApp().is_gl_version_greater_or_equal_to(3, 1);
     return enabled;
-}
-
-static bool mixed_filament_preview_active()
-{
-    const PresetBundle* preset_bundle = GUI::wxGetApp().preset_bundle;
-    if (preset_bundle == nullptr)
-        return false;
-
-    // Virtual mixed/gradient filaments are rendered as physical component
-    // moves after slicing. The de-geometrized GPU path pipeline currently
-    // exposes those component moves as discrete stripes in this preview, so
-    // keep the 2.4.0 legacy path buffers for mixed-filament projects until
-    // the GPU pipeline learns the legacy apparent-color presentation.
-    for (const MixedFilament& mixed_filament : preset_bundle->mixed_filaments.mixed_filaments()) {
-        if (mixed_filament.enabled && !mixed_filament.deleted)
-            return true;
-    }
-    return false;
 }
 
 // Bed-containment check shared by both toolpath loaders: the build-volume
@@ -1152,7 +1129,7 @@ void GCodeViewer::load(const GCodeProcessorResult& gcode_result, const Print& pr
         }
         // no GPU vertex buffers were built, so there is nothing to render as toolpath
         m_no_render_path = true;
-    } else if (gpu_path_pipeline_enabled() && !mixed_filament_preview_active()) {
+    } else if (gpu_path_pipeline_enabled()) {
         load_toolpaths_gpu(gcode_result, build_volume, exclude_bounding_box);
     } else {
         load_toolpaths(gcode_result, build_volume, exclude_bounding_box);
