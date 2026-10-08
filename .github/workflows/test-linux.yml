@@ -199,12 +199,12 @@ jobs:
           if-no-files-found: warn
 
       - name: Generate HTML report
-        if: always()
+        if: always() && steps.filter.outputs.filter != '__SKIP__'
         shell: bash
         run: node scripts/junit-to-html.js build/test-results.xml -t "OrcaSlicer Linux Tests" -o build/test-report.html
 
       - name: Upload HTML report
-        if: always()
+        if: always() && steps.filter.outputs.filter != '__SKIP__'
         uses: actions/upload-artifact@v5
         with:
           name: test-report-${{ matrix.os }}
