@@ -112,6 +112,24 @@ static bool gpu_path_pipeline_enabled()
     return enabled;
 }
 
+static bool mixed_filament_preview_active()
+{
+    const PresetBundle* preset_bundle = GUI::wxGetApp().preset_bundle;
+    if (preset_bundle == nullptr)
+        return false;
+
+    // Virtual mixed/gradient filaments are rendered as physical component
+    // moves after slicing. The de-geometrized GPU path pipeline currently
+    // exposes those component moves as discrete stripes in this preview, so
+    // keep the 2.4.0 legacy path buffers for mixed-filament projects until
+    // the GPU pipeline learns the legacy apparent-color presentation.
+    for (const MixedFilament& mixed_filament : preset_bundle->mixed_filaments.mixed_filaments()) {
+        if (mixed_filament.enabled && !mixed_filament.deleted)
+            return true;
+    }
+    return false;
+}
+
 // Bed-containment check shared by both toolpath loaders: the build-volume
 // check plus the exclude-area convex-hull intersection. Besides returning
 // the containment flag it writes toolpath_outside into gcode_result, which
@@ -1134,7 +1152,7 @@ void GCodeViewer::load(const GCodeProcessorResult& gcode_result, const Print& pr
         }
         // no GPU vertex buffers were built, so there is nothing to render as toolpath
         m_no_render_path = true;
-    } else if (gpu_path_pipeline_enabled()) {
+    } else if (gpu_path_pipeline_enabled() && !mixed_filament_preview_active()) {
         load_toolpaths_gpu(gcode_result, build_volume, exclude_bounding_box);
     } else {
         load_toolpaths(gcode_result, build_volume, exclude_bounding_box);
