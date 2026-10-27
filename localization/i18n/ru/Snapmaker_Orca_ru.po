@@ -13446,8 +13446,9 @@ msgstr "Все верхние поверхности"
 msgid "Topmost surface"
 msgstr "Самая верхняя поверхность"
 
-msgid "All solid layer"
-msgstr "Все сплошные поверхности"
+#, fuzzy
+msgid "All solid layers"
+msgstr "Сплошные слои"
 
 msgid "Ironing Pattern"
 msgstr "Шаблон разглаживания"
@@ -13993,7 +13994,8 @@ msgstr ""
 "материалом конической геометрии. При 0 все отверстия в основании модели "
 "будут заполнены."
 
-msgid "Detect overhang wall"
+#, fuzzy
+msgid "Detect overhang walls"
 msgstr "Обнаруживать нависающие периметры"
 
 #, c-format, boost-format
@@ -14685,8 +14687,9 @@ msgstr ""
 msgid "Minimum sparse infill threshold"
 msgstr "Мин. порог разреженного заполнения"
 
+#, fuzzy
 msgid ""
-"Sparse infill area which is smaller than threshold value is replaced by "
+"Sparse infill areas smaller than this threshold value are replaced by "
 "internal solid infill."
 msgstr ""
 "Область с разреженным заполнением, размер которого меньше этого порогового "
@@ -15485,12 +15488,14 @@ msgstr ""
 msgid "Nozzle temperature for layers after the initial one."
 msgstr "Температура сопла при печати для слоёв после первого."
 
-msgid "Detect thin wall"
+#, fuzzy
+msgid "Detect thin walls"
 msgstr "Обнаруживать тонкие стенки"
 
+#, fuzzy
 msgid ""
-"Detect thin wall which can't contain two line width. And use single line to "
-"print. Maybe printed not very well, because it's not closed loop."
+"Detect thin walls which can't contain two line widths, and use single line "
+"to print. Maybe not printed very well, because it's not a closed loop."
 msgstr ""
 "Обнаружение тонких стенок (стенки одинарной ширины), которые можно "
 "напечатать только в один проход экструдера. Возможно, будет напечатано не "
@@ -16096,8 +16101,9 @@ msgstr ""
 "элемента. Если задано в процентах, то значение вычисляться относительно "
 "диаметра сопла."
 
-msgid "Detect narrow internal solid infill"
-msgstr "Обнаруживать узкую область сплошного заполнения"
+#, fuzzy
+msgid "Detect narrow internal solid infills"
+msgstr "Оптимизация заполнения узких мест"
 
 msgid ""
 "This option will auto-detect narrow internal solid infill areas. If enabled, "
