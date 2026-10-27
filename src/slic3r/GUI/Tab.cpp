@@ -2835,7 +2835,7 @@ void TabPrint::build()
                 []() -> const std::vector<std::string>& { return process_flow_variant_options(); },
                 [](const std::string& key) { return is_process_flow_variant_option(key); });
         }
-        optgroup = page->new_optgroup(L("Initial layer speed"), L"param_speed_first", 15);
+        optgroup = page->new_optgroup(L("First layer speed"), L"param_speed_first", 15);
     optgroup->append_single_option_line("initial_layer_speed", "speed_settings_initial_layer_speed#initial-layer");
         optgroup->append_single_option_line("initial_layer_infill_speed", "speed_settings_initial_layer_speed#initial-layer-infill");
         optgroup->append_single_option_line("initial_layer_travel_speed", "speed_settings_initial_layer_speed#initial-layer-travel-speed");
