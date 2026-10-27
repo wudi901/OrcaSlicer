@@ -2365,6 +2365,8 @@ void MainFrame::on_sys_color_changed()
     m_tabpanel->Rescale();
     m_param_panel->msw_rescale();
 
+    diff_dialog.on_sys_color_changed();
+
     // update Plater
     wxGetApp().plater()->sys_color_changed();
     if(m_monitor)
