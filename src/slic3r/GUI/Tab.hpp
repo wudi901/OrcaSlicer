@@ -366,6 +366,7 @@ public:
 	void		update_label_colours();
 	void		decorate();
 	void		update_changed_ui();
+	void		filter_diff_option(std::vector<std::string>& options);
 	void		get_sys_and_mod_flags(const std::string& opt_key, bool& sys_page, bool& modified_page);
 	void		update_changed_tree_ui();
 	void		update_undo_buttons();

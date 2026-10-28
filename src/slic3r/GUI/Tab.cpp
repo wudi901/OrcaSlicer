@@ -1049,6 +1049,29 @@ void Tab::update_flow_variant_view_visibility()
     m_parent->show_page_header(show);
 }
 
+void Tab::filter_diff_option(std::vector<std::string>& options)
+{
+    for (auto& opt : options) {
+        const auto hash_pos = opt.find_last_of('#');
+        if (hash_pos == std::string::npos)
+            continue;
+
+        // Keep key#index when that exact option is tracked. Otherwise prefer the
+        // first element over the base key so indexed dirty state is not shared by
+        // all extruders.
+        if (m_options_list.find(opt) != m_options_list.end())
+            continue;
+
+        const std::string base = opt.substr(0, hash_pos);
+        const std::string idx0 = base + "#0";
+        if (m_options_list.find(idx0) != m_options_list.end()) {
+            opt = idx0;
+            continue;
+        }
+        if (m_options_list.find(base) != m_options_list.end())
+            opt = base;
+    }
+}
 // Update UI according to changes
 void Tab::update_changed_ui()
 {
@@ -1093,11 +1116,22 @@ void Tab::update_changed_ui()
             nonsys_options.emplace_back("extruders_count");
     }
 
+    filter_diff_option(dirty_options);
+    filter_diff_option(nonsys_options);
+
     for (auto& it : m_options_list)
         it.second = m_opt_status_value;
 
-    for (auto opt_key : dirty_options) m_options_list[opt_key] &= ~osInitValue;
-    for (auto opt_key : nonsys_options) m_options_list[opt_key] &= ~osSystemValue;
+    for (auto opt_key : dirty_options) {
+        auto iter = m_options_list.find(opt_key);
+        if (iter != m_options_list.end())
+            iter->second &= ~osInitValue;
+    }
+    for (auto opt_key : nonsys_options) {
+        auto iter = m_options_list.find(opt_key);
+        if (iter != m_options_list.end())
+            iter->second &= ~osSystemValue;
+    }
 
     if (m_flow_variant_view)
     {
