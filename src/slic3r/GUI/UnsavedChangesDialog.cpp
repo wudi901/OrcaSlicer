@@ -1792,7 +1792,7 @@ void UnsavedChangesDialog::update_tree(Preset::Type type, PresetCollection* pres
                 get_flow_variant_string_value(opt_key, old_config, new_config, flow_domain) :
                 get_string_value(opt_key, old_config);
             const wxString new_value = get_string_value(opt_key, new_config);
-            if (option.opt_key() != pure_opt_key) {
+            if (get_pure_opt_key(option.opt_key()) != pure_opt_key) {
                 // Only show the fallback for user-facing option types
                 // (bool/float/int/enum). Internal keys like IDs and
                 // serialized blobs are coString — skip those silently.
